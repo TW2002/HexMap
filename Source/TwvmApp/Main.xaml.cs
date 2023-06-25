@@ -32,7 +32,7 @@ namespace TwvmApp
         {
             Database.Items.Add("Localhost:2300");
             Database.Items.Add("MBN Game Z");
-            Database.SelectedIndex = 0; ;
+            Database.SelectedIndex = 0;
 
 
             MapMode.Items.Add("Current sector");
@@ -40,10 +40,10 @@ namespace TwvmApp
             MapMode.Items.Add("Class zero port");
             MapMode.Items.Add("Navigation point");
             MapMode.Items.Add("Follow trader");
-            MapMode.SelectedIndex = 0; ;
+            MapMode.SelectedIndex = 0;
 
             ClassZero.Items.Add("Terra Sol - 1");
-            ClassZero.Items.Add("Stardock ");
+            ClassZero.Items.Add("Stardock");
             ClassZero.Items.Add("Alpha Centauri");
             ClassZero.Items.Add("Rylos");
             ClassZero.SelectedIndex = 0;
@@ -73,8 +73,8 @@ namespace TwvmApp
 
         private void MapModeChanged(object sender, SelectionChangedEventArgs e)
         {
-            TargetSector.Visibility = Visibility.Hidden;
-            ClassZero.Visibility = Visibility.Hidden;
+            TargetSector.Visibility = Visibility.Collapsed;
+            ClassZero.Visibility = Visibility.Collapsed;
 
 
 
@@ -89,5 +89,6 @@ namespace TwvmApp
                     break;
             }
 
-}
+        }
+    }
 }

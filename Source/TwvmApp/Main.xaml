@@ -43,36 +43,37 @@
 
         </StackPanel>
 
-
-        <StackPanel Name ="BottomNav"
+            
+            <StackPanel Name ="BottomNav"
                     Orientation="Horizontal"
-                    HorizontalAlignment ="Left"
+                    HorizontalAlignment ="Stretch"
                     VerticalAlignment="Bottom"
-                    Height="23" Margin ="10">
+                    Height="23" Margin ="20">
             <ComboBox Name="MapMode"
-                      Width="200" 
+                      Width="100" 
                       Focusable="False"
                       SelectionChanged="MapModeChanged"/>
                     <ComboBox Name="ClassZero"
                       Width="200" 
                       Focusable="False"
-                      Visibility="Hidden"
+                      Visibility="Collapsed"
                       />
                  <ComboBox Name="NavPoint"
-                      Width="200" 
+                      Width="100" 
                       Focusable="False"
-                      Visibility="Hidden"
+                      Visibility="Collapsed"
                       />
                     <ComboBox Name="Trader"
                       Width="200" 
                       Focusable="False"
-                      Visibility="Hidden"
+                      Visibility="Collapsed"
                      />
 
             <TextBox  Name="TargetSector" 
-                    Width="75"
+                    Width="75" Height="23"
                     Margin ="10,0,0,0"
                     Focusable="False"
+                    TextAlignment="Center"  
                     Text = "Unknown" />
 
         </StackPanel>
