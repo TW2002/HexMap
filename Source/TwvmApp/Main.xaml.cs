@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,6 +24,70 @@ namespace TwvmApp
         public MainWindow()
         {
             InitializeComponent();
+
+            Loaded += OnLoaded;
         }
-    }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            Database.Items.Add("Localhost:2300");
+            Database.Items.Add("MBN Game Z");
+            Database.SelectedIndex = 0; ;
+
+
+            MapMode.Items.Add("Current sector");
+            MapMode.Items.Add("Selected sector");
+            MapMode.Items.Add("Class zero port");
+            MapMode.Items.Add("Navigation point");
+            MapMode.Items.Add("Follow trader");
+            MapMode.SelectedIndex = 0; ;
+
+            ClassZero.Items.Add("Terra Sol - 1");
+            ClassZero.Items.Add("Stardock ");
+            ClassZero.Items.Add("Alpha Centauri");
+            ClassZero.Items.Add("Rylos");
+            ClassZero.SelectedIndex = 0;
+        }
+
+        private void OnConnectClick(object sender, RoutedEventArgs e)
+        {
+            if (Connect.Content as String == "Connect")
+            {
+                Connect.Content = "Disconnect";
+            }
+            else
+            {
+                Connect.Content = "Connect";
+            }
+
+
+
+
+
+        }
+
+        private void MapMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void MapModeChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TargetSector.Visibility = Visibility.Hidden;
+            ClassZero.Visibility = Visibility.Hidden;
+
+
+
+            switch (MapMode.SelectedIndex)
+            {
+                case 0:
+                case 1:
+                    TargetSector.Visibility = Visibility.Visible;
+                    break;
+                case 2:
+                    ClassZero.Visibility = Visibility.Visible;
+                    break;
+            }
+
+}
 }

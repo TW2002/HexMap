@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TwvmApp"
+        xmlns:uc="clr-namespace:TwvmLib.Controls;assembly=TwvmLib"
         mc:Ignorable="d"
         Title="TradeWars Visual Map" Height="450" Width="800">
     <Grid>
@@ -14,8 +15,70 @@
         <GridSplitter Height="10" Background="red"  
                       VerticalAlignment="Bottom"
                       HorizontalAlignment="Stretch"
-                       ResizeDirection="Rows"
+                      ResizeDirection="Rows"
                       ShowsPreview="True"/>
+        <uc:SectorMap Name="SectorMap"
+                      Visibility ="Hidden" />
 
+        <StackPanel Name ="TopNav"
+                    Orientation="Horizontal"
+                    HorizontalAlignment ="Left"
+                    VerticalAlignment="Top"
+                    Height="23" Margin ="10">
+            <ComboBox Name="Database"
+                      Width="200" 
+                      Focusable="False"
+                      />
+            <Button Name="Connect" 
+                    Width="75"
+                    Margin ="10,0,0,0"
+                    Click="OnConnectClick"
+                    Focusable="False"
+                    Content ="Connect" />
+            <Button Name="NewDB" 
+                    Width="75"
+                    Margin ="10,0,0,0"
+                    Focusable="False"
+                    Content ="New" />
+
+        </StackPanel>
+
+
+        <StackPanel Name ="BottomNav"
+                    Orientation="Horizontal"
+                    HorizontalAlignment ="Left"
+                    VerticalAlignment="Bottom"
+                    Height="23" Margin ="10">
+            <ComboBox Name="MapMode"
+                      Width="200" 
+                      Focusable="False"
+                      SelectionChanged="MapModeChanged"/>
+                    <ComboBox Name="ClassZero"
+                      Width="200" 
+                      Focusable="False"
+                      Visibility="Hidden"
+                      />
+                 <ComboBox Name="NavPoint"
+                      Width="200" 
+                      Focusable="False"
+                      Visibility="Hidden"
+                      />
+                    <ComboBox Name="Trader"
+                      Width="200" 
+                      Focusable="False"
+                      Visibility="Hidden"
+                     />
+
+            <TextBox  Name="TargetSector" 
+                    Width="75"
+                    Margin ="10,0,0,0"
+                    Focusable="False"
+                    Text = "Unknown" />
+
+        </StackPanel>
+
+        <uc:Scanner Name="Scanner"
+                    Margin="5"
+                    Grid.Row="1" />
     </Grid>
 </Window>
