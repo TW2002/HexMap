@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SpeechLib\SpeechLib.csproj" />
     <ProjectReference Include="..\TwvmLib\TwvmLib.csproj" />
   </ItemGroup>
 

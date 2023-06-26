@@ -30,6 +30,9 @@ namespace TwvmApp
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            // Load speech recognition
+            SpeechLib.Listener sl = new();
+
             Database.Items.Add("Localhost:2300");
             Database.Items.Add("MBN Game Z");
             Database.SelectedIndex = 0;
