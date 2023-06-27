@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Speech.Recognition;
-using System.Speech.Synthesis;
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

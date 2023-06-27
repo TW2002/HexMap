@@ -13,15 +13,18 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using SpeechLib;
 namespace TwvmApp
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class Main : Window
     {
-        public MainWindow()
+        private Listener listener;
+        private Reader reader;
+
+        public Main()
         {
             InitializeComponent();
 
@@ -31,7 +34,8 @@ namespace TwvmApp
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             // Load speech recognition
-            SpeechLib.Listener sl = new();
+            listener  = new();
+            reader = new();
 
             Database.Items.Add("Localhost:2300");
             Database.Items.Add("MBN Game Z");
@@ -57,10 +61,13 @@ namespace TwvmApp
             if (Connect.Content as String == "Connect")
             {
                 Connect.Content = "Disconnect";
+                reader.Read("Connecting to" + Database.SelectedItem, "Qubot");
+
             }
             else
             {
                 Connect.Content = "Connect";
+                reader.Read("Disconnected from server", "Qubot");
             }
 
 
