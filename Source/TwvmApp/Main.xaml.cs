@@ -33,9 +33,11 @@ namespace TwvmApp
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            // Load speech recognition
-            listener  = new();
             reader = new();
+            // Load speech recognition
+            listener = new();
+            listener.EventRecognized += OnEvent;
+
 
             Database.Items.Add("Localhost:2300");
             Database.Items.Add("MBN Game Z");
@@ -54,6 +56,16 @@ namespace TwvmApp
             ClassZero.Items.Add("Alpha Centauri");
             ClassZero.Items.Add("Rylos");
             ClassZero.SelectedIndex = 0;
+        }
+
+        private void OnEvent(object sender, RecognizedArgs e)
+        {
+            switch (e.Name)
+            {
+                default:
+                    reader.Read(e.Name + "dot" + e.Text); 
+                    break;    
+            }
         }
 
         private void OnConnectClick(object sender, RoutedEventArgs e)
