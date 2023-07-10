@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +16,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SpeechLib;
+using TerminalLib;
+
 namespace TwvmApp
 {
     /// <summary>
@@ -23,6 +27,9 @@ namespace TwvmApp
     {
         private Listener listener;
         private Reader reader;
+
+        private List<Session> sessions = new(); 
+
 
         public Main()
         {
@@ -35,9 +42,17 @@ namespace TwvmApp
         {
             reader = new();
             // Load speech recognition
-            listener = new();
+            listener = new(reader);
             listener.EventRecognized += OnEvent;
+            reader.Read("Greetings program");
 
+       
+
+
+            Session s = new("Localhost 2300");
+            s.Hostname = "localhost";
+            s.Port = 2300;
+            s.Connect();
 
             Database.Items.Add("Localhost:2300");
             Database.Items.Add("MBN Game Z");
@@ -63,7 +78,7 @@ namespace TwvmApp
             switch (e.Name)
             {
                 default:
-                    reader.Read(e.Name + "dot" + e.Text); 
+                    //reader.Read(e.Name + "dot" + e.Text); 
                     break;    
             }
         }

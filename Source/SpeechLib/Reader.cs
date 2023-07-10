@@ -10,19 +10,30 @@ namespace SpeechLib;
 
 public class Reader
 {
+    public EventHandler? Started;
+    public EventHandler? Completed;
+    public delegate void EventHandler(object sender, EventArgs e);
+    private int readercount; 
+
+
     public String Voice  { get; set; }
     private SpeechSynthesizer reader;
 
     public Reader()
     {
         reader = new();
-        const string msg = "Greetings programs";
-        //Console.WriteLine(msg);
-        reader.SpeakAsync(msg);
+        reader.SpeakCompleted += OnCompleted;
+    }
+
+    private void OnCompleted(object? sender, SpeakCompletedEventArgs e)
+    {
+        if ((--readercount == 0) && (Completed != null))
+            Completed(this, new EventArgs());
     }
 
     public void Read(String msg, String voice = null)
     {
+        if ((readercount++ == 0) && (Started != null)) Started(this, new EventArgs());
         if (voice != null) Voice = voice;
 
         switch (voice)

@@ -17,22 +17,38 @@ public class Listener
     /// </summary>
     public EventHandler? EventRecognized;
     public delegate void EventHandler(object sender, RecognizedArgs e);
-     
+
+    private Reader reader;
+    private bool recognizermuted;
     private RecognizedArgs eArgs = new();
     private SpeechRecognitionEngine recognizer;
 
-    public Listener()
-    {
-        // Initialize event arguments object to be returned with events. 
-        //eArgs = new();
+    public Listener(Reader r = null)
+    {   if (r != null)
+        {
+            reader = r;
+            reader.Started += OnReaderStarted;
+            reader.Completed += OnReaderCompleted;
+        }
+
 
         // Create an in-process speech recognizer for the en-US locale.  
         recognizer = new(new CultureInfo("en-US"));
+        AddEvent(recognizer, "Omega");
+        AddEvent(recognizer, "Omega", "Omega 42");
+        AddEvent(recognizer, "Connect");
+        AddEvent(recognizer, "ConnectAll", "Connect All");
+        AddEvent(recognizer, "Disconnect", "Connect All");
+        AddEvent(recognizer, "DisconnectAll", "Connect All");
+        AddEvent(recognizer, "Kill Shadow");
+        //AddEvent(recognizer, "");
+
+
 
         // Create and load the exit grammar.  
-        Grammar exitGrammar = new Grammar(new GrammarBuilder("exit"));
-        exitGrammar.Name = "Exit Grammar";
-        recognizer.LoadGrammar(exitGrammar);
+        //Grammar exitGrammar = new Grammar(new GrammarBuilder("exit"));
+        //exitGrammar.Name = "Exit Grammar";
+        //recognizer.LoadGrammar(exitGrammar);
 
         // Create and load the dictation grammar.  
         Grammar dictation = new DictationGrammar();
@@ -55,6 +71,43 @@ public class Listener
         //completed = false;
         recognizer.RecognizeAsync(RecognizeMode.Multiple);
 
+    }
+
+    private void OnReaderCompleted(object sender, EventArgs e)
+    {
+        if (recognizermuted)
+        {
+            recognizermuted = false;
+
+            recognizer.RecognizeAsync(RecognizeMode.Multiple);
+        }
+    }
+
+    private void OnReaderStarted(object sender, EventArgs e)
+    {
+        if (!recognizermuted)
+        {
+            recognizermuted = true;
+            //((SpeechRecognitionEngine)sender).RecognizeAsyncCancel();
+            recognizer.RecognizeAsyncCancel();
+        }
+    }
+
+    private void AddEvent(SpeechRecognitionEngine r, string name, string text = null, string value = null)
+    {
+        // Create and load the grammar.  
+        if (String.IsNullOrEmpty(text))
+        {
+            text = name;
+        }
+        Grammar g = new Grammar(new GrammarBuilder(text));
+        g.Name = name;
+
+        if (!String.IsNullOrEmpty(value))
+        {
+            g.Name += "," + value;    
+        }
+        r.LoadGrammar(g);
     }
 
     private void SpeechRecognizedHandler(object sender, SpeechRecognizedEventArgs e)
