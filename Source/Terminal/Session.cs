@@ -23,7 +23,7 @@ public class Session
         Port = port;
     }
 
-    public object Connect()
+    public void Connect()
     {
         if (GameServer == null && Hostname != null)
         {
@@ -34,7 +34,7 @@ public class Session
             return;
         }
 
-        GameServer.ConnectAsync(Hostname, Port).ContinueWith<OnConnect>;
+        GameServer.Connect(Hostname, Port);
         if (GameServer.Connected == false) 
         { 
 

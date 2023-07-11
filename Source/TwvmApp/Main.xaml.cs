@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SpeechLib;
 using TerminalLib;
+using TwvmApp.Data;
 
 namespace TwvmApp
 {
@@ -28,6 +29,7 @@ namespace TwvmApp
         private Listener listener;
         private Reader reader;
 
+        private Data.Games games = new();
         private List<Session> sessions = new(); 
 
 
@@ -40,6 +42,34 @@ namespace TwvmApp
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            if (false)
+            {
+                games.AddLast(new Game("Local 2300", "localhost", 2300));
+                games.AddLast(new Game("Local 2301", "localhost", 2301));
+                games.AddLast(new Game("MBN Game Z", "MicroBlaster.Net")
+                {
+                    Login = "Micro",
+                    Password = "Meow1234",
+                    Letter = "a"
+                });
+
+                games.Save();
+            }
+            else
+            {
+                games.Load();
+            }
+
+            foreach (Game game in games)
+            {
+                Database.Items.Add(game.Name);
+                sessions.Add (new(game.Name, game.Hostname, game.Port));
+
+            }
+            Database.SelectedIndex = 0;
+
+
+
             reader = new();
             // Load speech recognition
             listener = new(reader);
@@ -49,14 +79,11 @@ namespace TwvmApp
        
 
 
-            Session s = new("Localhost 2300");
-            s.Hostname = "localhost";
-            s.Port = 2300;
-            s.Connect();
+     ;
 
-            Database.Items.Add("Localhost:2300");
-            Database.Items.Add("MBN Game Z");
-            Database.SelectedIndex = 0;
+//            Database.Items.Add("Localhost:2300");
+  //          Database.Items.Add("MBN Game Z");
+  //          Database.SelectedIndex = 0;
 
 
             MapMode.Items.Add("Current sector");
