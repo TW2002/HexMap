@@ -1,15 +1,8 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
+﻿using System.Xml;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Automation;
-using System.Xml;
-using System.Xml.Linq;
 
-namespace TwvmApp.Data;
+
+namespace TradeWarsData;
 
 public class Game
 {
@@ -23,6 +16,8 @@ public class Game
     public string? Trader { get; set; }
     public string? Ship { get; set; }
     public string? Planet { get; set; }
+    public List<Sector> Sectors { get; set; }
+    public Status Status { get; set; }
 
 
     public Game(string name, string? hostname = null, int port = 0) 
@@ -46,7 +41,24 @@ public class Game
                 Port = port;
             }
         }
-    }   
+
+        Sectors = new List<Sector>();
+        Status = new Status();
+        
+
+    }  
+    
+    public void MovedTo(int sector, int ship = 0, int planet = 0) 
+    {
+        if (sector > 0)
+        {
+            Status.Sector = sector;
+
+            Sector s = Sectors.Single(se => se.SectorId == sector);
+            if (s == null) Sectors.Add(new(sector));
+        }
+ 
+    }
 }
 
 public class Games : LinkedList<Game>

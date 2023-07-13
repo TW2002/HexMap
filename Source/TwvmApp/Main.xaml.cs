@@ -17,7 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SpeechLib;
 using TerminalLib;
-using TwvmApp.Data;
+using TradeWarsData;
 
 namespace TwvmApp
 {
@@ -29,7 +29,7 @@ namespace TwvmApp
         private Listener listener;
         private Reader reader;
 
-        private Data.Games games = new();
+        private Games games = new();
         private List<Session> sessions = new(); 
 
 
@@ -63,7 +63,8 @@ namespace TwvmApp
             foreach (Game game in games)
             {
                 Database.Items.Add(game.Name);
-                sessions.Add (new(game.Name, game.Hostname, game.Port));
+                //sessions.Add(new(game.Name, game.Hostname, game.Port));
+                sessions.Add(new(game));
 
             }
             Database.SelectedIndex = 0;
@@ -114,20 +115,24 @@ namespace TwvmApp
         {
             if (Connect.Content as String == "Connect")
             {
-                Connect.Content = "Disconnect";
-                reader.Read("Connecting to" + Database.SelectedItem, "Qubot");
-
+                ConnectTo(Database.SelectedItem as string);
             }
             else
             {
                 Connect.Content = "Connect";
                 reader.Read("Disconnected from server", "Qubot");
             }
+        }
 
-
-
-
-
+        private void ConnectTo(string db)
+        {
+            Session session = sessions.Where(s => s.Name == db).Single();
+            //if (!session.GameServer.Connected)
+            //{
+                Connect.Content = "Disconnect";
+                session.Connect();
+                reader.Read("Connecting to " + db, "Qubot");
+            //}
         }
 
         private void MapMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
