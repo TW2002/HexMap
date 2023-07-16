@@ -63,8 +63,8 @@ namespace TwvmApp
             foreach (Game game in games)
             {
                 Database.Items.Add(game.Name);
-                //sessions.Add(new(game.Name, game.Hostname, game.Port));
                 sessions.Add(new(game));
+                game.Moved += OnMove;
 
             }
             Database.SelectedIndex = 0;
@@ -101,10 +101,18 @@ namespace TwvmApp
             ClassZero.SelectedIndex = 0;
         }
 
+        private void OnMove(object sender, StatusEventArgs e)
+        {
+            Scanner.MoveTo(e.Sector, (Game)sender);
+        }
+
         private void OnEvent(object sender, RecognizedArgs e)
         {
             switch (e.Name)
             {
+                case "Connect":
+                    ConnectTo(Database.SelectedItem as string);
+                    break;
                 default:
                     //reader.Read(e.Name + "dot" + e.Text); 
                     break;    

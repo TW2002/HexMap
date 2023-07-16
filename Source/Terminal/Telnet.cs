@@ -17,7 +17,6 @@ public class TelnetClient
     public DataEventHandler? DataReceived;
     public delegate void DataEventHandler(object sender, DataEventArgs e);
 
-    System.EventArgs ssss = new();
 
 
 

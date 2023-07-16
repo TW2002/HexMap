@@ -6,6 +6,10 @@ namespace TradeWarsData;
 
 public class Game
 {
+    public StatusEventHandler? Moved;
+    public StatusEventHandler? Updated;
+    public delegate void StatusEventHandler(object sender, StatusEventArgs e);
+
     public string Name { get; set; }
     public string? Hostname { get; set; }
     public int Port { get; set; }
@@ -51,11 +55,16 @@ public class Game
     public void MovedTo(int sector, int ship = 0, int planet = 0) 
     {
         if (sector > 0)
-        {
+         {
             Status.Sector = sector;
 
-            Sector s = Sectors.Single(se => se.SectorId == sector);
+            Sector? s = Sectors.FirstOrDefault(se => se.SectorId == sector);
             if (s == null) Sectors.Add(new(sector));
+            if (Moved != null)
+            {
+                StatusEventArgs eArgs = new(sector);
+                Moved(this, eArgs);
+            }
         }
  
     }
@@ -134,5 +143,14 @@ public class Games : LinkedList<Game>
             }
             AddLast(new Game(name, host));
         }
+    }
+}
+
+public class StatusEventArgs : EventArgs
+{
+    public int Sector { get; set; }
+    public StatusEventArgs(int sector)
+    {
+        Sector = sector;
     }
 }
