@@ -51,7 +51,7 @@ public class TelnetClient
     {
         Socket? s = (Socket?)ar.AsyncState;
         if (s == null) return;
-
+        
         try
         {
             s.EndConnect(ar);
@@ -98,6 +98,22 @@ public class TelnetClient
             GameData = game;
         }
     }
+
+    public void Send(string text)
+    {
+        if (!Client.Connected) return;
+        //Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+        
+        byte[] data = Encoding.ASCII.GetBytes(text);
+        Client.BeginSend(data, 0, data.Length, SocketFlags.None, OnSent, null);
+
+        static void OnSent(IAsyncResult ar)
+        {
+            // Handle completion of the send operation
+        }
+    }
+
 
 }
 

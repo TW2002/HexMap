@@ -1,0 +1,39 @@
+﻿<Button x:Class="TwvmLib.Controls.HexSector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TwvmLib.Controls"
+             mc:Ignorable="d" >
+  
+    <Button.Template>
+        <ControlTemplate TargetType="Button">
+            <Grid>
+                <Path Name="alertPath" Data="
+                      M 23 8 A 10 10 33 0 1 33 3 
+                      L 57, 3 A 7 7 33 0 1 67 8 
+                      L 83 38 A 7 7 33 0 1 83 42 
+                      L 67 72 A 7 7 33 0 1 63 77 
+                      L 33 77 A 7 7 33 0 1 23 72 
+                      L 7 42 A 7 7 33 0 1 7 38 Z" 
+                      Opacity="1" Fill="{TemplateBinding Background}" 
+                      StrokeThickness="6"
+                      Stroke="{Binding AlertBrush}" />
+                
+                <Path Data="
+                      M 20 5 A 10 10 33 0 1 30 0 
+                      L 60, 0 A 10 10 33 0 1 70 5 
+                      L 86 35 A 10 10 33 0 1 86 45 
+                      L 70 75 A 10 10 33 0 1 60 80 
+                      L 30 80 A 10 10 33 0 1 20 75 
+                      L 4 45 A 10 10 33 0 1 4 35 Z" 
+                      Opacity="1"
+                      StrokeThickness="3" 
+                      Stroke="{TemplateBinding BorderBrush}" 
+                      Panel.ZIndex="1" />
+                <ContentPresenter />
+            </Grid>
+        </ControlTemplate>
+    </Button.Template>
+
+</Button>

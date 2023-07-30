@@ -14,7 +14,16 @@ public class Game
     public string? Hostname { get; set; }
     public int Port { get; set; }
 
+    public string? TwxVersion { get; set; }
+    public string? TwxDatabase { get; set; }
+    public int TwxSectors { get; set; }
+    public int TwxWarps { get; set; }
+
+    public int MaxSectors { get; set; }
+
+
     public string? Login { get; set; }
+
     public string? Password { get; set; }
     public string? Letter { get; set; }
     public string? Trader { get; set; }
@@ -23,9 +32,18 @@ public class Game
     public List<Sector> Sectors { get; set; }
     public Status Status { get; set; }
 
+    public int Stardock { get; set; }
 
-    public Game(string name, string? hostname = null, int port = 0) 
-    { 
+    public int Alpha { get; set; }
+
+    public int Rylos { get; set; }
+    public int Nav1 { get; set; }
+    public int Nav2 { get; set; }
+
+
+
+    public Game(string name, string? hostname = null, int port = 0)
+    {
         Name = name;
         if (hostname != null)
         {
@@ -48,14 +66,14 @@ public class Game
 
         Sectors = new List<Sector>();
         Status = new Status();
-        
 
-    }  
-    
-    public void MovedTo(int sector, int ship = 0, int planet = 0) 
+
+    }
+
+    public void MovedTo(int sector, int ship = 0, int planet = 0)
     {
         if (sector > 0)
-         {
+        {
             Status.Sector = sector;
 
             Sector? s = Sectors.FirstOrDefault(se => se.SectorId == sector);
@@ -66,9 +84,34 @@ public class Game
                 Moved(this, eArgs);
             }
         }
- 
+    }
+
+    public void TwxDetected()
+    {
+        if (Updated == null) return;
+        StatusEventArgs eArgs = new(0);
+        Updated(this, eArgs);
+    }
+
+    public  void AddWarp(int cs , int dest)
+    {
+        Sector? sector = Sectors.FirstOrDefault(s => s.SectorId == cs);
+        if (sector == null)
+        {
+            sector = new(cs);
+            Sectors.Add(sector);
+        }
+
+        int wc = sector.WarpsOut.Count(w => w == dest);
+        if (wc > 0) return;
+
+        sector.WarpsOut.Add(dest);
+
+
     }
 }
+    
+
 
 public class Games : LinkedList<Game>
 {

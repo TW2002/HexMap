@@ -43,7 +43,11 @@ public class Sector
     }
     public class PortData
     {
-        public int SectorId { get; set; }
+        private string[] type = new[] { "Special", "BBS", "BSB", "SBB","SSB","SBS","BSS","SSS","BBB","Stardock" };
+
+
+
+    public int SectorId { get; set; }
         public string? Name { get; set; }
         public int Class { get; set; }
 
@@ -65,6 +69,12 @@ public class Sector
         public int OrgMaxMCIC { get; set; }
         public int EquMinMCIC { get; set; }
         public int EquMaxMCIC { get; set; }
+        public string? Type { get{
+                if (Class >= 0)
+                    return  type[Class];
+                return "";
+            }
+        }
 
         public PortData(int sector)
         {
@@ -72,6 +82,7 @@ public class Sector
 
             //LastSeen = DateTime.UtcNow;
             //SeenBy = seenBy;
+            Class = -1;
         }
     }
 }

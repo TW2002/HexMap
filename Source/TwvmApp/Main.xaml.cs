@@ -65,11 +65,12 @@ namespace TwvmApp
                 Database.Items.Add(game.Name);
                 sessions.Add(new(game));
                 game.Moved += OnMove;
+                game.Updated += OnUpdate;
 
             }
             Database.SelectedIndex = 0;
 
-
+            Scanner.MoveTo(1, (Game?)games.First());
 
             reader = new();
             // Load speech recognition
@@ -99,6 +100,23 @@ namespace TwvmApp
             ClassZero.Items.Add("Alpha Centauri");
             ClassZero.Items.Add("Rylos");
             ClassZero.SelectedIndex = 0;
+        }
+
+        private void OnUpdate(object sender, StatusEventArgs e)
+        {
+            Game game = (Game)sender;
+            Session session = sessions.Where(s => s.Name == game.Name).Single();
+            //if (!session.GameServer.Connected)
+
+
+            if (e.Sector == 0)
+            {
+                if ((! string.IsNullOrEmpty(game.TwxVersion)) && game.Stardock == 0) 
+                {
+                    //session.GameServer.Send("$ssGetMap.ts\r");
+                }
+
+            }
         }
 
         private void OnMove(object sender, StatusEventArgs e)

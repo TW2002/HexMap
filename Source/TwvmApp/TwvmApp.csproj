@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutomaticGraphLayout.WpfGraphControl" Version="1.1.12" />
+    <PackageReference Include="Microsoft.Msagl" Version="1.1.6" />
+    <PackageReference Include="Microsoft.Msagl.Drawing" Version="1.1.6" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SpeechLib\SpeechLib.csproj" />
     <ProjectReference Include="..\Terminal\TerminalLib.csproj" />
     <ProjectReference Include="..\TwvmLib\TwvmLib.csproj" />

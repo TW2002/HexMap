@@ -6,16 +6,20 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Linq;
 using TradeWarsData;
+using System.Net.NetworkInformation;
 
 namespace TerminalLib;
 
 public static class Extractor
 {
-    private static int cs = -1;
+    private static int cs = -1;   // Current sector being worked on.
+    private static int ls = -1;   // last  sector from previous map line.
     private static int ship = -1;
     private static int planet = -1;
     private static string lastCase = "";
     private static Sector? sector = null;
+
+    private static readonly Random rnd = new();
 
 
     public static void Parse(string data, Game game)
@@ -29,6 +33,8 @@ public static class Extractor
         foreach (var line in lines)
         {
             try {
+                if (line.Contains(" > ")) ParseCouse(line, game);
+
                 //  remove parentheses from line
                 string cl = line.Replace("(","")
                              .Replace(")", "");
@@ -40,6 +46,54 @@ public static class Extractor
                 var words = Regex.Replace(cl, @"\s\s+", " ").Split(" ");
                 switch (words[0])
                 {
+                    // TWX Proxy Server v2.6.31a(Beta)
+                    case "TWX":
+                        game.TwxVersion = words[3];
+                        break;
+
+                    // Using Database data\NoverduF.xdb w/ 20000 sectors and 56430 warps
+                    case "Using":
+                        game.TwxDatabase = words[2];
+                        game.TwxSectors = ParseInt(words, 4);
+                        game.TwxWarps = ParseInt(words, 7);
+                        game.MaxSectors = game.TwxSectors;
+                        game.TwxDetected(); 
+                        break;
+
+                    case "::Stardock:": // Location from TWX.
+                        int value = ParseInt(words, 1);
+                        if (value > 0) game.Stardock = value;
+                        break;
+
+                    case "::Alpha:": // Location from TWX.
+                        value = ParseInt(words, 1);
+                        if (value > 0)
+                        {
+                            game.Alpha = value;
+                            game.Nav1 = value;
+                        }
+                        else
+                        {
+                            game.Nav1 = rnd.Next(game.MaxSectors); 
+                        }
+                        break;
+
+                    case "::Rylos:": // Location from TWX.
+                        value = ParseInt(words, 1);
+                        if (value > 0)
+                        { 
+                            game.Rylos = value;
+                            game.Nav2 = value;
+                        }
+                        else
+                        {
+                            game.Nav2 = rnd.Next(game.MaxSectors);
+                        }
+
+                        break;
+
+
+
                     case "Command":  // Main Menu - Command Prompt
                     case "Computer": // Computer Menu
                     case "Corporate": // Corporate Menu
@@ -190,6 +244,30 @@ public static class Extractor
         }
     }
 
+    private static void ParseCouse(string line, Game game)
+    {
+        int cw = -1;
+        int lw = -1;
+
+                                                                string[] sectors = line.Trim().Split(" > ");
+        // Enumerate each sector 
+        foreach(string sector in sectors)
+        {
+            if ((sector == "FM") || (sector == "TO")) return;
+
+            try
+            {
+                lw = cw;
+                   cw = -1;
+                              cw = Int32.Parse(sector);
+            } catch { }
+
+            if ((cw > 0) && (lw > 0))
+            {
+                game.AddWarp(lw, cw);
+            }       
+        }
+    }
 
     private static int ParseInt(string s)
     {

@@ -12,9 +12,13 @@
         <uc:HexNav x:Name="MainNav"
                    HorizontalAlignment="Left"
                    Margin="0"/>
-        <RichTextBox Name="MainTextBox" 
-                     Background ="#000020">
-            
-        </RichTextBox> 
+        <RichTextBox Name="MainTextBox" BorderThickness="0"
+                     Background ="#0040f0"
+                     HorizontalAlignment="Left">
+        </RichTextBox>
+        <RichTextBox Name="PortTextBox" BorderThickness="0"
+                     Background ="#006000"
+                     HorizontalAlignment="Left">
+            </RichTextBox> 
     </Grid>
 </UserControl>

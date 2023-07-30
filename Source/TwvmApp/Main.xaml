@@ -17,8 +17,8 @@
                       HorizontalAlignment="Stretch"
                       ResizeDirection="Rows"
                       ShowsPreview="True"/>
-        <uc:SectorMap Name="SectorMap"
-                      Visibility ="Hidden" />
+        <uc:Graph Name="SectorGraph"
+                      Visibility ="Visible" />
 
         <StackPanel Name ="TopNav"
                     Orientation="Horizontal"

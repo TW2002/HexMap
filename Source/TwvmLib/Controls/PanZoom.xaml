@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:uc="clr-namespace:TwvmLib.Controls">
+
+    <!-- PanZoom ControlTemplate -->
+    <ControlTemplate x:Key="PanZoomTemplate" TargetType="uc:PanZoom">
+        <ScrollViewer Name="sv"
+            VerticalScrollBarVisibility="Visible"
+            HorizontalScrollBarVisibility="Visible"          
+            DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
+            <ContentPresenter Name="cp" ClipToBounds="True"
+                Content="{TemplateBinding ContentControl.Content}"
+                Margin="{TemplateBinding Padding}"/>
+        </ScrollViewer>
+        
+    </ControlTemplate>
+    
+    <!-- PanZoom Style -->
+    <Style TargetType="uc:PanZoom">
+        <Setter Property="MinHeight" Value="50"/>
+        <Setter Property="MinWidth" Value="50"/>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="Template" Value="{StaticResource PanZoomTemplate}"/>
+    </Style>
+
+
+</ResourceDictionary>

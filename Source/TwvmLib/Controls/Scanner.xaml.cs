@@ -40,18 +40,22 @@ public partial class Scanner : UserControl
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
 
-        MainTextBox.FontSize = ActualHeight / 8;
-        MainTextBox.FontFamily = new FontFamily("Comic Sans MS");
-        MainTextBox.Document.Blocks.Clear();
+        MainTextBox.FontSize = ActualHeight / 12;
+        PortTextBox.FontSize = ActualHeight / 12;
 
+        MainTextBox.FontFamily = new FontFamily("Comic Sans MS");
+        PortTextBox.FontFamily = new FontFamily("Comic Sans MS");
+        MainTextBox.Document.Blocks.Clear();
+        PortTextBox.Document.Blocks.Clear();
 
         AppendText(col1, "Greetings programs...", Brushes.Magenta);
         AppendText(col1, "<Not Connected>", Brushes.Red);
        
     }
 
-    public void MoveTo(int sector, Game game)
+    public void MoveTo(int sector, Game? game)
     {
+        if (game == null) return;
         Sector? cs = game.Sectors.FirstOrDefault(s => s.SectorId == sector);
         if (cs == null) return;
 
@@ -72,8 +76,16 @@ public partial class Scanner : UserControl
             col2.Inlines.Clear();
 
             AppendText(col1, $"Sector  : {sector} in {cs.Nebula}.\n", Brushes.White);
-            AppendText(col1, $"Beacon  : {cs.Beacon}\n", Brushes.White);
+            if (!string.IsNullOrEmpty(cs.Beacon))
+                AppendText(col1, $"Beacon  : {cs.Beacon}\n", Brushes.White);
             AppendText(col1, $" Warps to Sector(s) :  {warps}\n", Brushes.White);
+
+            AppendText(col2, $"Ports   : {cs.Port.Name}, Class {cs.Port.Class} ({cs.Port.Type})\n\n\n\n\n\n", Brushes.White);
+            AppendText(col2, $"Debug   : Nav1:{game.Nav1} Nav2:{game.Nav2} \n", Brushes.White);
+            AppendText(col2, $"Class Zero : T:1() S:{game.Stardock}() A:{game.Alpha}() R:{game.Rylos}()", Brushes.White);
+
+
+
 
             MainNav.Scan();
         }));
@@ -83,7 +95,8 @@ public partial class Scanner : UserControl
         Run run = new(text);
         run.Foreground = brush;
         p.Inlines.Add(run);
-        MainTextBox.Document.Blocks.Add(p);
+        MainTextBox.Document.Blocks.Add(col1);
+        PortTextBox.Document.Blocks.Add(col2);
     }
 
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -92,15 +105,23 @@ public partial class Scanner : UserControl
         MainNav.Width = ActualHeight;
         MainNav.Height = ActualHeight;
 
-        // Reposition the textbox when the control's height changes. 
+        // Reposition the main textbox when the control's height changes. 
         Thickness margin = MainTextBox.Margin;
         margin.Left = ActualHeight;
         MainTextBox.Margin = margin;
+        MainTextBox.Width = (ActualWidth - ActualHeight) * .55;
+
+        // Reposition the port textbox when the control's height changes. 
+        margin = PortTextBox.Margin;
+        margin.Left = ActualHeight + MainTextBox.Width;
+        PortTextBox.Margin = margin;
+        PortTextBox.Width = (ActualWidth - ActualHeight) * .45;
 
         // Adjust the text box font size.
 
-        Double fontSize = ActualHeight/8;
+        Double fontSize = ActualHeight/12;
         MainTextBox.Document.FontSize = fontSize;
+        PortTextBox.Document.FontSize = fontSize;
         //MainTextBox.SelectAll();
         //TextRange tr = new(MainTextBox.Selection.Start,MainTextBox.Selection.End);
         //tr.ApplyPropertyValue(TextElement.FontSizeProperty, fontSize);
