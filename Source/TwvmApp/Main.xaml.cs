@@ -71,6 +71,7 @@ namespace TwvmApp
             Database.SelectedIndex = 0;
 
             Scanner.MoveTo(1, (Game?)games.First());
+            SectorGraph.MoveTo(1, (Game?)games.First());
 
             reader = new();
             // Load speech recognition

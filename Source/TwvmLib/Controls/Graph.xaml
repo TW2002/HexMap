@@ -70,20 +70,6 @@
                      StrokeThickness="1"
                      Width="100" Height="100"
                      Canvas.Top="86" Canvas.Left="200" />
-            <uc:HexSector x:Name="s1"
-                Visibility="Visible"
-                BorderBrush="Magenta"
-                BorderThickness="6"
-                AlertBrush="Red"
-                Background="Blue"
-                Canvas.Top="94" Canvas.Left="155" />
-            <uc:HexSector x:Name="s2"
-                Visibility="Visible"
-                BorderBrush="#ffffff"
-                BorderThickness="3"
-                AlertBrush="Magenta"
-                Foreground="Green"
-                Canvas.Top="140" Canvas.Left="230" />
         </Canvas>
     </uc:PanZoom>
 </UserControl>

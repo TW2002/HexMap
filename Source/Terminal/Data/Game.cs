@@ -93,8 +93,19 @@ public class Game
         Updated(this, eArgs);
     }
 
-    public  void AddWarp(int cs , int dest)
+    public void AddWarps(int cs, int w1, int w2 = 0, int w3 = 0, int w4 = 0, int w5 = 0, int w6 = 0)
     {
+        AddWarp(cs,w1);
+        AddWarp(cs,w2);
+        AddWarp(cs,w3);
+        AddWarp(cs,w4);
+        AddWarp(cs,w5);
+        AddWarp(cs,w6);
+    }
+    public void AddWarp(int cs, int dest)
+    {
+        if (dest ==  0) return;
+
         Sector? sector = Sectors.FirstOrDefault(s => s.SectorId == cs);
         if (sector == null)
         {

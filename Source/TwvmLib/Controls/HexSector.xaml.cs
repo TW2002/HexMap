@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TradeWarsData;
 
 namespace TwvmLib.Controls;
 
@@ -34,21 +35,22 @@ public partial class HexSector : Button
 
 
 
+    public int SectorFontSize { get; set; }
     public Brush? AlertBrush { get; set; }
 
     private Point? dragStart = null;
 
-    public HexSector()
+    public HexSector(int sector = 0)
     {
+        DataContext = this;
         InitializeComponent();
 
         Loaded += OnLoaded;
+        if (sector > 0) Sector = sector;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        DataContext = this;
-
         PreviewMouseMove += OnPreviewMouseMove;
         PreviewMouseDown += OnMouseDown;
         PreviewMouseUp += OnMouseUp;
@@ -64,7 +66,9 @@ public partial class HexSector : Button
     private static void SectorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         HexSector self = (HexSector)d;
-        //self.
+        self.SectorFontSize = 36;
+        if (self.Sector > 999) self.SectorFontSize = 26;
+        if (self.Sector > 9999) self.SectorFontSize = 20;
     }
 
     private void OnPreviewMouseMove(object sender, MouseEventArgs e)

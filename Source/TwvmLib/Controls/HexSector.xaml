@@ -31,6 +31,28 @@
                       StrokeThickness="3" 
                       Stroke="{TemplateBinding BorderBrush}" 
                       Panel.ZIndex="1" />
+                <Grid Name="SrandardView"
+                      Width="75" Height="40"
+                      Background="Blue">
+                    <Label Content="{Binding Sector}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="White" 
+                           FontFamily="Areal"
+                           FontSize="{Binding SectorFontSize}"
+                           FontWeight="Bold" />
+
+                </Grid>
+                <Grid Name="DetailView" Visibility="Hidden"
+                      Width="50" Height="50"
+                      Background="Red">
+                    <Label Content="{Binding Sector}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Top"
+                           FontFamily="Areal"
+                           FontSize="16" />
+
+                </Grid>
                 <ContentPresenter />
             </Grid>
         </ControlTemplate>

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TwvmApp"
         xmlns:uc="clr-namespace:TwvmLib.Controls;assembly=TwvmLib"
         mc:Ignorable="d"
-        Title="TradeWars Visual Map" Height="450" Width="800">
+        Title="TradeWars HexMap" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*" />

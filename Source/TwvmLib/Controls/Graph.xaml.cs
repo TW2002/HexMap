@@ -15,7 +15,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TradeWarsData;
 
-
 namespace TwvmLib.Controls;
 
 /// <summary>
@@ -23,6 +22,10 @@ namespace TwvmLib.Controls;
 /// </summary>
 public partial class Graph : UserControl
 {
+    private Game game;
+    private Model model = new();
+
+
     public Graph()
     {
         InitializeComponent();
@@ -94,14 +97,76 @@ public partial class Graph : UserControl
 
     }
 
-    public void MoveTo(int sector, Game? game)
+    public void MoveTo(int sector, Game? g)
     {
-        if (game == null) return;
+        if (g == null) return;
+        game = g;
+
+        LoadSectorMap();
+        CreateGraph();
+        LayoutSectors("Root");
+        LayoutSectors("Terra");
+
+
+
+
         Sector? cs = game.Sectors.FirstOrDefault(s => s.SectorId == sector);
         if (cs == null) return;
 
+    }
+
+    private void LoadSectorMap()
+    {
+        game.AddWarps(1, 2, 3, 4);
+        game.AddWarps(2, 1, 3, 4);
+        game.AddWarps(3, 1, 2, 4, 500);
+        game.AddWarps(4, 1, 2, 3);
+        game.AddWarps(500, 3, 9999);
+        game.AddWarps(9999, 500, 18765);
+        game.AddWarps(18765,9999);
+    }
+
+    private void CreateGraph()
+    {
+        Layer layer = model.GetLayer("Root");
+        layer.AddNode(1, 150, 150);
+        layer.AddNode(3, 150, 300);
+        layer.AddNode(500, 300, 300);
+        layer.AddNode(9999, 300, 150);
+        layer.AddEdge(1,2);
+        layer.AddEdge(2,500);
+        layer.AddEdge(500,9999);
+
+        layer = model.GetLayer("Terra");
+        layer.AddNode(18765);
+        layer.AddNode(2);
+        layer.AddNode(4);
+        layer.AddEdge(18765,9999);
+        layer.AddEdge(2,1);
+        layer.AddEdge(2,3);
+        layer.AddEdge(2,4);
+
 
     }
+
+    private void LayoutSectors(string layout)
+    {
+        var nodes = model.GetNodes(layout);
+        if (nodes == null) return;
+        foreach (var node in nodes)
+        {
+            HexSector hs = new(node.Id);
+            hs.AlertBrush = Brushes.Red;
+            Canvas.SetLeft(hs, node.X);
+            Canvas.SetTop(hs, node.Y);
+            canvas.Children.Add(hs);
+        }
+
+
+
+    }
+
+
 }
 
 
