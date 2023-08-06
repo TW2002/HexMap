@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Msagl.GraphmapsWithMesh;
 using System.Windows.Shapes;
 using System.Windows.Navigation;
+using Microsoft.Msagl.Routing;
 
 namespace TwvmLib.Controls;
 
@@ -22,6 +23,14 @@ internal class Model
         Layers = new List<GeometryGraph>();
     }
 
+    public void Calculate()
+    {
+//        InteractiveEdgeRouter portRouter = new InteractiveEdgeRouter(Layers[0],
+//            Nodes.Select(n => n.BoundaryCurve), 3, 0.65 * 3, 0);
+//        portRouter.Run();
+    }
+
+
     public Layer GetLayer(string layerName)
     {
         var layer = Layers.FirstOrDefault(g => (string)g.UserData == layerName);
@@ -29,6 +38,8 @@ internal class Model
         {
             layer = new() { UserData = layerName };
             Layers.Add(layer);
+
+            Graph m_fdgGraph = new();
         }
 
         return new Layer(layer);

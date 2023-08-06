@@ -137,7 +137,7 @@ public partial class Graph : UserControl
         layer.AddEdge(2,500);
         layer.AddEdge(500,9999);
 
-        layer = model.GetLayer("Terra");
+        //layer = model.GetLayer("Terra");
         layer.AddNode(18765);
         layer.AddNode(2);
         layer.AddNode(4);
@@ -146,7 +146,7 @@ public partial class Graph : UserControl
         layer.AddEdge(2,3);
         layer.AddEdge(2,4);
 
-
+        model.Calculate();
     }
 
     private void LayoutSectors(string layout)
