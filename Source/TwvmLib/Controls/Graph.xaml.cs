@@ -22,8 +22,8 @@ namespace TwvmLib.Controls;
 /// </summary>
 public partial class Graph : UserControl
 {
-    private Game game;
-    private Model model = new();
+    private Game? game;
+    private Layers layers = new();
 
 
     public Graph()
@@ -117,6 +117,8 @@ public partial class Graph : UserControl
 
     private void LoadSectorMap()
     {
+        if (game == null) return;
+
         game.AddWarps(1, 2, 3, 4);
         game.AddWarps(2, 1, 3, 4);
         game.AddWarps(3, 1, 2, 4, 500);
@@ -128,34 +130,34 @@ public partial class Graph : UserControl
 
     private void CreateGraph()
     {
-        Layer layer = model.GetLayer("Root");
-        layer.AddNode(1, 150, 150);
-        layer.AddNode(3, 150, 300);
-        layer.AddNode(500, 300, 300);
-        layer.AddNode(9999, 300, 150);
-        layer.AddEdge(1,2);
-        layer.AddEdge(2,500);
-        layer.AddEdge(500,9999);
+        Layer layer = layers.GetLayer("Root");
+        layer.NewNode(1, 150, 150);
+        layer.NewNode(3, 150, 300);
+        layer.NewNode(500, 300, 300);
+        layer.NewNode(9999, 300, 150);
+        layer.NewEdge(1,3);
+        layer.NewEdge(3,500);
+        layer.NewEdge(500,9999);
 
-        //layer = model.GetLayer("Terra");
-        layer.AddNode(18765);
-        layer.AddNode(2);
-        layer.AddNode(4);
-        layer.AddEdge(18765,9999);
-        layer.AddEdge(2,1);
-        layer.AddEdge(2,3);
-        layer.AddEdge(2,4);
+        //layer = layers.GetLayer("Terra");
+        layer.NewNode(18765);
+        layer.NewNode(2);
+        layer.NewNode(4);
+        layer.NewEdge(18765,9999);
+        layer.NewEdge(2,1);
+        layer.NewEdge(2,3);
+        layer.NewEdge(2,4);
 
-        model.Calculate();
+        //layers.Calculate();
     }
 
     private void LayoutSectors(string layout)
     {
-        var nodes = model.GetNodes(layout);
+        var nodes = layers.GetNodes(layout);
         if (nodes == null) return;
         foreach (var node in nodes)
         {
-            HexSector hs = new(node.Id);
+            HexSector hs = new(node.Sector);
             hs.AlertBrush = Brushes.Red;
             Canvas.SetLeft(hs, node.X);
             Canvas.SetTop(hs, node.Y);
