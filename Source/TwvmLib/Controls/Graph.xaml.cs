@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Msagl.Layout.Layered;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using TradeWarsData;
 
 namespace TwvmLib.Controls;
@@ -105,7 +107,7 @@ public partial class Graph : UserControl
         LoadSectorMap();
         CreateGraph();
         LayoutSectors("Root");
-        LayoutSectors("Terra");
+        //LayoutSectors("Terra");
 
 
 
@@ -131,44 +133,88 @@ public partial class Graph : UserControl
     private void CreateGraph()
     {
         Layer layer = layers.GetLayer("Root");
-        layer.NewNode(1, 150, 150);
-        layer.NewNode(3, 150, 300);
-        layer.NewNode(500, 300, 300);
-        layer.NewNode(9999, 300, 150);
+        layer.NewNode(1, new HexSector(1), 150, 600);
+        layer.NewNode(3, new HexSector(3));
+        layer.NewNode(500, new HexSector(500));
+        layer.NewNode(9999, new HexSector(9999), 600, 150);
         layer.NewEdge(1,3);
         layer.NewEdge(3,500);
         layer.NewEdge(500,9999);
 
         //layer = layers.GetLayer("Terra");
-        layer.NewNode(18765);
-        layer.NewNode(2);
-        layer.NewNode(4);
+        layer.NewNode(18765, new HexSector(18765));
+        layer.NewNode(2, new HexSector(2));
+        layer.NewNode(4, new HexSector(4));
         layer.NewEdge(18765,9999);
         layer.NewEdge(2,1);
         layer.NewEdge(2,3);
-        layer.NewEdge(2,4);
+        layer.NewEdge(2, 4);
+        layer.NewEdge(1, 4);
 
         //layers.Calculate();
     }
 
     private void LayoutSectors(string layout)
     {
-        var nodes = layers.GetNodes(layout);
-        if (nodes == null) return;
-        foreach (var node in nodes)
+        Layer? layer = layers.GetLayer("Root");
+        if (layer == null) return;
+
+        //var edges = layers.GetEdges(layout);
+        //if (edges == null) return;
+        foreach (var edge in layer.Edges)
         {
-            HexSector hs = new(node.Sector);
-            hs.AlertBrush = Brushes.Red;
-            Canvas.SetLeft(hs, node.X);
-            Canvas.SetTop(hs, node.Y);
-            canvas.Children.Add(hs);
+            //var sn = canvas.Children.OfType<HexSector>().FirstOrDefault(c => c.Sector == edge.Source.Sector);
+            //var tn = canvas.Children.OfType<HexSector>().FirstOrDefault(c => c.Sector == edge.Target.Sector);
+            //var sn = nodes.Find(n => n.Sector == edge.Source.Sector);
+            //var tn = nodes.Find(n => n.Sector == edge.Target.Sector);
+            //if (sn == null || tn == null) continue;
+
+
+            WarpLine wl = new(edge.Source.HS as HexSector, edge.Target.HS as HexSector);
+            //hs.AlertBrush = Brushes.Red;
+            //Canvas.SetLeft(hs, node.X);
+            //Canvas.SetTop(hs, node.Y);
+            canvas.Children.Add(wl);
+
         }
 
 
 
+
+
+
+        //var nodes = layers.GetNodes(layout);
+        //if (nodes == null) return;
+        foreach (var node in layer.Nodes)
+        {
+            //HexSector hs = new(node.Sector, node);
+            var hs =  node.HS as HexSector;
+            hs.AlertBrush = Brushes.Red;
+            //Canvas.SetLeft(hs, node.X);
+            //Canvas.SetTop(hs, node.Y);
+            canvas.Children.Add(hs);
+        }
+        layer.NodeMoved += OnNodeMoved;
+        layer.Run();
+
     }
 
-
+    private void OnNodeMoved(object sender, NodeMovedEventArgs e)
+    {
+        //var child = canvas.Children.Select(c => c.Sector == 1);
+        //canvas.Children.OfType<TextBlock>().FirstOrDefault();
+        Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() =>
+        {
+            //var hs = canvas.Children.OfType<HexSector>().FirstOrDefault(c => c.Sector == e.Sector);
+            var hs = e.HS as HexSector;
+            if (hs == null) return;
+            hs.X = e.X;
+            hs.Y = e.Y;
+            //hs.X = e.X;
+            //Canvas.SetLeft(hs, e.X);
+            //Canvas.SetTop(hs, e.Y);
+        }));
+    }
 }
 
 

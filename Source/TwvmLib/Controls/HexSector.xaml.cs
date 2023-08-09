@@ -33,6 +33,27 @@ public partial class HexSector : Button
             typeof(int), typeof(HexSector),
             new FrameworkPropertyMetadata(new PropertyChangedCallback(SectorChanged)));
 
+    public double X 
+    {
+        get { return (double)GetValue(XProperty); }
+        set { SetValue(XProperty, value); }
+    }
+
+    public static readonly DependencyProperty XProperty
+        = DependencyProperty.Register("X",
+            typeof(double), typeof(HexSector),
+            new FrameworkPropertyMetadata(new PropertyChangedCallback(PositionChanged)));
+
+    public double Y
+    {
+        get { return (double)GetValue(YProperty); }
+        set { SetValue(YProperty, value); }
+    }
+
+    public static readonly DependencyProperty YProperty
+        = DependencyProperty.Register("Y",
+            typeof(double), typeof(HexSector),
+            new FrameworkPropertyMetadata(new PropertyChangedCallback(PositionChanged)));
 
 
     public int SectorFontSize { get; set; }
@@ -40,7 +61,7 @@ public partial class HexSector : Button
 
     private Point? dragStart = null;
 
-    public HexSector(int sector = 0)
+    public HexSector(int sector)
     {
         DataContext = this;
         InitializeComponent();
@@ -70,6 +91,15 @@ public partial class HexSector : Button
         if (self.Sector > 999) self.SectorFontSize = 26;
         if (self.Sector > 9999) self.SectorFontSize = 20;
     }
+    private static void PositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        HexSector self = (HexSector)d;
+
+        Canvas.SetLeft(self, self.X - (self.ActualWidth / 2));
+        Canvas.SetTop(self, self.Y - (self.ActualHeight / 2));
+
+
+    }
 
     private void OnPreviewMouseMove(object sender, MouseEventArgs e)
     {
@@ -78,9 +108,12 @@ public partial class HexSector : Button
 
         Canvas c = (Canvas)Parent;
         Point position = e.GetPosition(c);
+        
+        //Canvas.SetLeft(this, position.X - dragStart.Value.X);
+        //Canvas.SetTop(this, position.Y - dragStart.Value.Y);
+        X = position.X - dragStart.Value.X;
+        Y = position.Y - dragStart.Value.Y;
 
-        Canvas.SetLeft(this, position.X - dragStart.Value.X);
-        Canvas.SetTop(this, position.Y - dragStart.Value.Y);
 
         //e.Handled = true;
     }
@@ -89,7 +122,10 @@ public partial class HexSector : Button
     private void OnMouseDown(object sender, MouseButtonEventArgs e)
     {
         var element = (UIElement)sender;
-        dragStart = e.GetPosition(element); ;
+        //dragStart = e.GetPosition(element);
+        dragStart = new (e.GetPosition(element).X - (ActualWidth / 2),
+                         e.GetPosition(element).Y - (ActualHeight / 2));
+
         element.CaptureMouse();
 
         Mouse.OverrideCursor = Cursors.Hand;

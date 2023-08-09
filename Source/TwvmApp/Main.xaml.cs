@@ -42,6 +42,8 @@ namespace TwvmApp
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            WindowState = WindowState.Maximized;
+
             if (false)
             {
                 games.AddLast(new Game("Local 2300", "localhost", 2300));

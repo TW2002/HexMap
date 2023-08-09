@@ -1,14 +1,16 @@
-﻿using System;
+﻿using EpForceDirectedGraph.cs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-//using Fdg = EpForceDirectedGraph.cs;
+using System.Timers;
+using Fdg = EpForceDirectedGraph.cs;
 
 namespace TradeWarsData;
 
-public class Layer 
+public class Layer
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
@@ -16,7 +18,15 @@ public class Layer
     public List<Node> Nodes { get; set; }
     public List<Edge> Edges { get; set; }
 
-    //private  Fdg.Graph graph = new();
+    internal Fdg.Graph fGraph = new();
+    internal Fdg.ForceDirected2D? fPhysics;
+
+    private System.Timers.Timer tick = new(200);
+    private int ticks = 0;
+
+    public NodeMovedEventHandler? NodeMoved;
+    public delegate void NodeMovedEventHandler(object sender, NodeMovedEventArgs e);
+
 
     public Layer(string name, object? data = null)
     {
@@ -26,22 +36,73 @@ public class Layer
 
         Nodes = new List<Node>();
         Edges = new List<Edge>();
+
+        tick.AutoReset = true;
+        tick.Enabled = false;
+        tick.Elapsed += OnTick;
     }
 
-    public void NewNode(int sector, double x = 0, double y = 0)
+    public void Run()
     {
-        Nodes.Add(new Node(sector, x, y)
-        { Pinned = (x > 0 || y > 0) });
+        float stiffness = 81.76f;
+        float repulsion = 40000.0f;
+        float damping = 0.5f;
+
+        // 2D Force Directed
+        fPhysics = new(fGraph, stiffness, repulsion, damping);
+
+        ticks = 20;
+        tick.Enabled = true;
+    }
+
+    public void Stop()
+    {
+        fPhysics = null;
+
+        tick.Enabled = false;
+    }
+
+    private void OnTick(object? sender, ElapsedEventArgs e)
+    {
+        if (ticks-- < 1 || fPhysics == null)
+        {
+            tick.Enabled = false;
+            return;
+        }
+
+        fPhysics.Calculate(0.2f);
+        fPhysics.EachNode((Fdg.Node fNode, Point point) =>
+        {
+            if (fNode != null && point != null && NodeMoved != null)
+            {
+                Node? node = Nodes.Find(n => n.Sector.ToString() == fNode.Data.label);
+                if (node != null)
+                //&& (node.X != point.position.x
+                //                 || node.Y != point.position.y))
+                {
+                    //node.X = point.position.x;
+                    //node.Y = point.position.y;
+
+                    NodeMovedEventArgs eArgs = new(node, point.position.x, point.position.y);
+                    NodeMoved(this, eArgs);
+                }
+            }
+        });
+    }
+
+    public void NewNode(int sector, object hs, double x = 0, double y = 0)
+    {
+        Nodes.Add(new Node(sector, hs)
+        //{ Pinned = (x > 0 || y > 0) }
+        );
         
 
-        //Fdg.Node node = CreateNode(new Fdg.NodeData()
-        //{
-        //    label = $"{sector}",
-        //    mass = 3.0f,
-        //    initialPostion = new Fdg.FDGVector2(posX, posY)
-        //});
-        //node.Pinned = true;
-        //AddNode(node);
+        Fdg.Node fNode = fGraph.CreateNode(new Fdg.NodeData() {
+            label = $"{sector}",
+            mass = 3.0f,
+            initialPostion = new Fdg.FDGVector2((float)x, (float)y) });
+        fNode.Pinned = (x > 0 || y > 0);
+        fGraph.AddNode(fNode);
     }
 
     public void NewEdge(int source, int target, float length = 60f)
@@ -53,16 +114,14 @@ public class Layer
         Edges.Add(new (sn, tn, length));
 
 
-        //Fdg.Node sn = GetNode($"{source}");
-        //Fdg.Node tn = GetNode($"{target}");
-        //if (sn == null || tn == null) return;
+        Fdg.Node fsn = fGraph.GetNode($"{source}");
+        Fdg.Node ftn = fGraph.GetNode($"{target}");
+        if (fsn == null || ftn == null) return;
 
-        //Fdg.Edge edge = CreateEdge(sn, tn, new Fdg.EdgeData()
-        //{
-        //    label = $"{source} - {target}",
-        //    length = 60.0f
-        //});
-        //AddEdge(edge);
+        Fdg.Edge fEdge = fGraph.CreateEdge(fsn, ftn, new Fdg.EdgeData() {
+            label = $"{source} - {target}",
+            length = 60.0f });
+        fGraph.AddEdge(fEdge);
     }
 }
 
@@ -78,17 +137,11 @@ public class Layers : LinkedList<Layer>
         if (layer == null) return;
 
 
-        float stiffness = 81.76f;
-        float repulsion = 40000.0f;
-        float damping = 0.5f;
 
-        // 2D Force Directed
-        //Fdg.ForceDirected2D physics = new Fdg.ForceDirected2D(layer, // instance of Graph
-        //
-        //                                                   stiffness}}, // stiffness of the spring
-        //                                                   repulsion, // node repulsion rate 
-        //                                                   damping    // damping rate  
-        //                                                   );
+        //forceDirected.EachEdge(delegate (Edge edge, Spring spring)
+        //{
+        //    drawEdge(edge, spring.point1.position, spring.point2.position);
+        //});
 
         //        InteractiveEdgeRouter portRouter = new InteractiveEdgeRouter(Layers[0],
         //            Nodes.Select(n => n.BoundaryCurve), 3, 0.65 * 3, 0);
@@ -123,37 +176,51 @@ public class Layers : LinkedList<Layer>
         return layer.Nodes;
     }
 
-}public class Node
+    public List<Edge>? GetEdges(string layerName)
+    {
+        var layer = this.FirstOrDefault(g => g.Name == layerName);
+        if (layer == null) return null;
+
+        return layer.Edges;
+    }
+}
+
+public class Node
 {
-    public Guid Id { get; set; }
+    //public Guid Id { get; set; }
     public int Sector { get; set; }
-    public double X { get; set; }
-    public double Y { get; set; }
-    public bool Pinned { get; set; }
+    //public double X { get; set; }
+    //public double Y { get; set; }
+    //public bool Pinned { get; set; }
+    public object HS { get; set; }
 
 
     //public Node(string iId, double x = 0, double y = 0, Fdg.NodeData? iData = null) : base(iId, iData)
-    public Node(int sector, double x = 0, double y = 0)
+    //public Node(int sector, double x = 0, double y = 0)
+    public Node(int sector, object hs)
     {
-        Id = new Guid();
+        HS = hs;
+        //Id = new Guid();
         Sector = sector;
-        X = x;
-        Y = y;
+        //X = x;
+        //Y = y;
         //base.Data.initialPostion = new Fdg.FDGVector2((int)X, (int)Y);
     }
 }
 
 public class Edge
 {
-    public Guid Id { get; set; }
-    public Node? Source { get; set; }
-    public Node? Target { get; set; }
+    //public Guid Id { get; set; }
+    public Node Source { get; set; }
+    public Node Target { get; set; }
     public float Length { get; set; }
+    public bool TwoWay { get; set; }
+
     public string? PathData { get; set; }
 
-    public Edge(Node? source, Node? target, float length = 60f) 
+    public Edge(Node source, Node target, float length = 60f) 
     {
-        Id = new Guid();
+        //Id = new Guid();
         Source = source;
         Target = target;
         Length = length;
@@ -161,9 +228,26 @@ public class Edge
     }
 }
 
+public class NodeMovedEventArgs : EventArgs
+{
+    //public Guid Id { get; set; }
+    //public int Sector { get; set; }
+    public double X { get; set; }
+    public double Y { get; set; }
+    //public bool Pinned { get; set; }
+    public object HS { get; set; }
 
 
-
+    public NodeMovedEventArgs(Node node, double x, double y)
+    {
+        //Id = node.Id;
+        //Sector = node.Sector;
+        HS = node.HS;
+        X = x;
+        Y = y;
+        //Pinned = node.Pinned;
+    }
+}
 
 
 
