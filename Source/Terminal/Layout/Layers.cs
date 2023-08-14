@@ -6,6 +6,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Xml.Linq;
 using Fdg = EpForceDirectedGraph.cs;
 
 namespace TradeWarsData;
@@ -23,6 +24,7 @@ public class Layer
 
     private System.Timers.Timer tick = new(200);
     private int ticks = 0;
+    private Random rnd = new();
 
     public NodeMovedEventHandler? NodeMoved;
     public delegate void NodeMovedEventHandler(object sender, NodeMovedEventArgs e);
@@ -45,7 +47,7 @@ public class Layer
     public void Run()
     {
         float stiffness = 81.76f;
-        float repulsion = 40000.0f;
+        float repulsion = 300000.0f;
         float damping = 0.5f;
 
         // 2D Force Directed
@@ -54,6 +56,23 @@ public class Layer
         ticks = 20;
         tick.Enabled = true;
     }
+
+    public void UpdateNode(int sector, double x, double y)
+    {
+        if (fPhysics == null) return;
+
+        Fdg.Node fn = fGraph.GetNode($"{sector}");
+        fn.Pinned = true;
+        fn.Data.mass = 150.0f;
+
+        fPhysics.GetPoint(fn).position.x = (float)x;
+        fPhysics.GetPoint(fn).position.y = (float)y;
+
+        ticks = 5;
+        tick.Enabled = true;
+
+    }
+
 
     public void Stop()
     {
@@ -67,6 +86,14 @@ public class Layer
         if (ticks-- < 1 || fPhysics == null)
         {
             tick.Enabled = false;
+
+            foreach (Node node in Nodes)
+            {
+                Fdg.Node fn = fGraph.GetNode($"{node.Sector}");
+                fn.Pinned = node.Pinned;
+
+            }
+
             return;
         }
 
@@ -90,24 +117,50 @@ public class Layer
         });
     }
 
-    public void NewNode(int sector, object hs, double x = 0, double y = 0)
+    public void NewNode(int sector, object userdata, double x = 0, double y = 0)
     {
-        Nodes.Add(new Node(sector, hs)
-        //{ Pinned = (x > 0 || y > 0) }
-        );
-        
+        // Don't create node if it already exists. 
+        if (Nodes.Find(n => n.Sector == sector) != null) 
+            return;
+
+
+        bool pinned = (x > 0 || y > 0);
+        if (!pinned)
+        {
+            x = rnd.NextDouble() * 1500;
+            y = rnd.NextDouble() * 1500;
+        }
+
+
+
+        Nodes.Add(new Node(sector, userdata)
+        { Pinned = pinned });
+
 
         Fdg.Node fNode = fGraph.CreateNode(new Fdg.NodeData() {
             label = $"{sector}",
-            mass = 3.0f,
+            mass = 10.0f,
             initialPostion = new Fdg.FDGVector2((float)x, (float)y) });
-        fNode.Pinned = (x > 0 || y > 0);
+        fNode.Pinned = pinned;
         fGraph.AddNode(fNode);
     }
 
-    public void NewEdge(int source, int target, float length = 60f)
+    public void NewEdge(int source, int target, float length = 10.0f)
     {
-        Node? sn = Nodes.Find(n => n.Sector == source);
+        // Don't create edge if it already exists. 
+        if (Edges.Find(n => n.Source.Sector == source && n.Target.Sector == target) != null)
+            return;
+
+        // Search for two-way edges.
+        Edge? twoway = Edges.Find(n => n.Source.Sector == target && n.Target.Sector == source);
+        if (twoway != null)
+        {
+            twoway.TwoWay = true;
+            return;
+        }
+
+
+            Node? sn = Nodes.Find(n => n.Sector == source);
         Node? tn = Nodes.Find(n => n.Sector == target);
         if (sn == null || tn == null) return;
 
@@ -120,7 +173,8 @@ public class Layer
 
         Fdg.Edge fEdge = fGraph.CreateEdge(fsn, ftn, new Fdg.EdgeData() {
             label = $"{source} - {target}",
-            length = 60.0f });
+            length = length
+        });
         fGraph.AddEdge(fEdge);
     }
 }
@@ -191,15 +245,15 @@ public class Node
     public int Sector { get; set; }
     //public double X { get; set; }
     //public double Y { get; set; }
-    //public bool Pinned { get; set; }
-    public object HS { get; set; }
+    public bool Pinned { get; set; }
+    public object UserData { get; set; }
 
 
     //public Node(string iId, double x = 0, double y = 0, Fdg.NodeData? iData = null) : base(iId, iData)
     //public Node(int sector, double x = 0, double y = 0)
-    public Node(int sector, object hs)
+    public Node(int sector, object userdata)
     {
-        HS = hs;
+        UserData = userdata;
         //Id = new Guid();
         Sector = sector;
         //X = x;
@@ -235,14 +289,14 @@ public class NodeMovedEventArgs : EventArgs
     public double X { get; set; }
     public double Y { get; set; }
     //public bool Pinned { get; set; }
-    public object HS { get; set; }
+    public object UserData { get; set; }
 
 
     public NodeMovedEventArgs(Node node, double x, double y)
     {
         //Id = node.Id;
         //Sector = node.Sector;
-        HS = node.HS;
+        UserData = node.UserData;
         X = x;
         Y = y;
         //Pinned = node.Pinned;

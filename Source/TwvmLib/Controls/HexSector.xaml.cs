@@ -61,6 +61,11 @@ public partial class HexSector : Button
 
     private Point? dragStart = null;
 
+    public MovedEventHandler? Moved;
+    public delegate void MovedEventHandler(object sender, MovedEventArgs e);
+
+
+
     public HexSector(int sector)
     {
         DataContext = this;
@@ -114,6 +119,7 @@ public partial class HexSector : Button
         X = position.X - dragStart.Value.X;
         Y = position.Y - dragStart.Value.Y;
 
+        Moved?.Invoke(this, new(Sector, X, Y));
 
         //e.Handled = true;
     }
@@ -141,8 +147,17 @@ public partial class HexSector : Button
         //e.Handled = true;
     }
 
+}
 
-
-
-
+public class MovedEventArgs
+{
+    public int Sector { get; set; }
+    public double X { get; set; }
+    public double Y { get; set; }
+    public MovedEventArgs(int sector, double x, double y)
+    {
+        Sector = sector;
+        X = x;
+        Y = y;
+    }
 }

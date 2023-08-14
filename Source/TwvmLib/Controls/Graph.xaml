@@ -3,8 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:uc="clr-namespace:TwvmLib.Controls">
     <uc:PanZoom>
-        <Canvas Name="canvas"
-                Width="2000" Height="1000">
+        <Canvas Name="canvas" 
+                Width="4000" Height="4000" >
+           <!-- <Canvas.Clip>
+                <RectangleGeometry Rect="50,50,300,300"  />
+
+            </Canvas.Clip>-->
             <Canvas.Background>
                 <DrawingBrush TileMode="Tile" 
                               Viewport="0,0, 150,90" 

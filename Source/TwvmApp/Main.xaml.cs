@@ -116,7 +116,7 @@ namespace TwvmApp
             {
                 if ((! string.IsNullOrEmpty(game.TwxVersion)) && game.Stardock == 0) 
                 {
-                    //session.GameServer.Send("$ssGetMap.ts\r");
+                    session.GameServer.Send("$ssGetMap.ts\r");
                 }
 
             }
